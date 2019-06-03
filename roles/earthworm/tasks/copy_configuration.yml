@@ -1,0 +1,43 @@
+# This playbook contains the configuration of an EW system
+
+- name: Download git earthworm configuration
+  git: 
+    repo: "{{ ew_conf_repo }}"
+    dest: /home/{{ ew_user }}/ewconfig
+    force: yes
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_conf
+
+- name: Symlink the earthworm configuration 
+  file:
+    src: "/home/{{ ew_user }}/ewconfig/ew-node"
+    dest: "{{ ew_run }}"
+    state: link
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_conf
+
+- name: Copy ew_linux.bash from install to working dir
+  copy:
+    src: "{{ ew_home }}/{{ ew_vers }}/environment/ew_linux.bash"
+    dest: "{{ ew_run }}/params/ew_linux.bash"
+    remote_src: yes
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_conf
+
+- name: Insert/Update the ew source into bashrc
+  blockinfile:
+    path: "/home/{{ ew_user }}/.bashrc"
+    block: "source {{ ew_run }}/params/ew_linux.bash"
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_conf
+
+- name: Start Earthworm
+  shell: "byobu new-session -d -s $USER && byobu rename-window -t $USER:0 'earthworm' && byobu send-keys 'startstop' C-m"
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_start
+

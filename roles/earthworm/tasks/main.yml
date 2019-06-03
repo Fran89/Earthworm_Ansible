@@ -1,0 +1,4 @@
+---
+# This playbook contains common plays that will be run on ew nodes.
+- include: install_earthworm.yml
+- include: copy_configuration.yml

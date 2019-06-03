@@ -1,0 +1,50 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Install ntp
+  yum: name=ntp state=present
+  tags: ntp
+
+- name: Configure ntp file
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  tags: ntp
+  notify: restart ntp
+
+- name: Start the ntp service
+  service: name=ntpd state=started enabled=yes
+  tags: ntp
+
+- name: Add EPEL Repository
+  yum:
+    name: epel-release
+    state: present
+  tags: pkg
+
+- name: Upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+  tags: pkg
+
+- name: Install the development packages
+  yum: 
+    name: "@Development tools"
+    state: present
+  tags: pkg
+
+- name: Install byobu terminal manager
+  yum:
+    name: 'byobu'
+    state: latest
+  tags: pkg
+
+- name: Install sudo
+  yum:
+    name: 'sudo'
+    state: latest
+  tags: pkg
+
+- name: Test to see if selinux is running
+  command: getenforce
+  register: sestatus
+  changed_when: false

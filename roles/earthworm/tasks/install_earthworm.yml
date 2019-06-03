@@ -1,0 +1,90 @@
+# This playbook contains the install of an EW system
+
+- name: Create the earthworm directory
+  file:
+    path: "{{ ew_home }}"
+    state: directory
+  tags: ew
+
+- name: Checkout earthworm to working folder
+  subversion:
+    repo: "{{ ew_repo }}"
+    dest: "{{ ew_home }}/{{ ew_vers }}"
+    force: yes
+  tags: ew
+
+- name: Change EW_HOME
+  replace:
+    path: "{{ ew_home }}/{{ ew_vers }}/environment/ew_linux.bash"
+    regexp: '^export EW_HOME=.*$'
+    replace: 'export EW_HOME="{{ ew_home }}"'
+  tags: ew
+
+- name: Change EW_VERSION
+  replace:
+    path: "{{ ew_home }}/{{ ew_vers }}/environment/ew_linux.bash"
+    regexp: '^export EW_VERSION=.*$'
+    replace: 'export EW_VERSION="{{ ew_vers }}"'
+  tags: ew
+
+- name: Change EW_RUN_DIR
+  replace:
+    path: "{{ ew_home }}/{{ ew_vers }}/environment/ew_linux.bash"
+    regexp: '^EW_RUN_DIR=.*$'
+    replace: 'EW_RUN_DIR="{{ ew_run }}"'
+  tags: ew
+
+- name: Change EW_INSTALLATION
+  replace:
+    path: "{{ ew_home }}/{{ ew_vers }}/environment/ew_linux.bash"
+    regexp: '^export EW_INSTALLATION=.*$'
+    replace: 'export EW_INSTALLATION={{ ew_inst }}'
+  tags: ew
+
+- name: Add aux bin path
+  replace:
+    path: "{{ ew_home }}/{{ ew_vers }}/environment/ew_linux.bash"
+    regexp: '^export PATH=.*$'
+    replace: 'export PATH={{ ew_path }}'
+  tags: ew
+
+- name: Install Earthworm
+  shell: "source {{ ew_home }}/{{ ew_vers }}/environment/ew_linux.bash && cd {{ ew_home }}/{{ ew_vers }}/src && make unix"
+  tags: ew
+  
+- name: Add the user {{ ew_user }} with a bash shell, appending the group 'wheel' to the user's groups
+  user:
+    name: "{{ ew_user }}"
+    password: "{{ ew_pass }}"
+    shell: /bin/bash
+    groups: wheel
+    append: yes
+  tags: ew_conf
+
+- name: Copy skel bashrc file to earthworm home
+  copy:
+    src: /etc/skel/.bashrc
+    dest: "/home/{{ ew_user }}/.bashrc"
+    remote_src: yes
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_conf
+
+- name: Copy skel bash_profile file to earthworm home
+  copy:
+    src: /etc/skel/.bash_profile
+    dest: "/home/{{ ew_user }}/.bash_profile"
+    remote_src: yes 
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_conf
+
+- name: Copy skel bash_logout file to earthworm home
+  copy:
+    src: /etc/skel/.bash_logout
+    dest: "/home/{{ ew_user }}/.bash_logout"
+    remote_src: yes
+  become: yes
+  become_user: "{{ ew_user }}"
+  tags: ew_conf
+

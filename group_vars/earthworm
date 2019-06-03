@@ -1,0 +1,17 @@
+---
+### Variables listed here are applicable to earthworm hosts
+
+## Earthworm configuration variables
+ew_conf_repo: http://bkup.prsmp.uprm.edu/git/Fran89/test-earthworm-config.git
+ew_user: earthworm
+ew_pass: $6$ewsalt$oeYZTab3DuVBDwe1EMv1gFLGxkUAb8MctdC/lwgS9KPDQ3zLnjbiSZOKSThBTtjfFBb/DsiV7j9DU/D9bLy5k.
+
+## Eartworm install variables
+ew_repo: svn://svn.isti.com/earthworm/trunk
+ew_home: /opt/earthworm
+ew_vers: working
+ew_run:  /home/{{ew_user}}/ew-node
+ew_inst: INST_PRSM
+ew_path: ${EW_HOME}/${EW_VERSION}/bin:${EW_RUN_DIR}/bin:${PATH}
+
+

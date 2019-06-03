@@ -1,0 +1,14 @@
+---
+# This playbook deploys the whole application stack in this site.- name: apply common configuration to all nodes
+
+- name: Apply common configuration to all nodes
+  hosts: all
+  remote_user: centos
+  roles:
+    - common
+    
+- name: Apply Earthworm configuration to earthworm nodes
+  hosts: earthworm
+  remote_user: centos
+  roles:
+    - earthworm   
